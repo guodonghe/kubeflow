@@ -1,0 +1,71 @@
+patchesJson6902:
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: istiod
+    namespace: istio-system
+  patch: |-
+    - op: add
+      path: /spec/template/spec/nodeSelector
+      value:
+        kubeflow-only: "true"
+    - op: add
+      path: /spec/template/spec/tolerations
+      value:
+      - key: "app"
+        operator: "Equal"
+        value: "kubeflow"
+        effect: "NoSchedule"
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: istio-ingressgateway
+    namespace: istio-system
+  patch: |-
+    - op: add
+      path: /spec/template/spec/nodeSelector
+      value:
+        kubeflow-only: "true"
+    - op: add
+      path: /spec/template/spec/tolerations
+      value:
+      - key: "app"
+        operator: "Equal"
+        value: "kubeflow"
+        effect: "NoSchedule"
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: istio-cni-node
+    namespace: istio-system
+  patch: |-
+    - op: add
+      path: /spec/template/spec/nodeSelector
+      value:
+        kubeflow-only: "true"
+    - op: add
+      path: /spec/template/spec/tolerations
+      value:
+      - key: "app"
+        operator: "Equal"
+        value: "kubeflow"
+        effect: "NoSchedule"
+
+#patches:
+#- path: istiod-patch.yaml
+#- path: istio-cni-patch.yaml
+#- path: istio-ingressgateway-patch.yaml
+
+images:
+- name: gcr.io/istio-release/pilot
+  newName: 801719121160.dkr.ecr.cn-north-1.amazonaws.com.cn/kubeflow/istio-release/pilot
+  newTag: 1.26.1
+- name: gcr.io/istio-release/proxyv2
+  newName: 801719121160.dkr.ecr.cn-north-1.amazonaws.com.cn/kubeflow/istio-release/proxyv2
+  newTag: 1.26.1
+- name: gcr.io/istio-release/install-cni
+  newName: 801719121160.dkr.ecr.cn-north-1.amazonaws.com.cn/kubeflow/istio-release/install-cni
+  newTag: 1.26.1
